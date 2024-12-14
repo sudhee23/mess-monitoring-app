@@ -194,20 +194,20 @@ class MessrepHomePage extends StatelessWidget {
         onTap: (index) {
           switch (index) {
             case 0:
-              Navigator.pushNamed(context, '/adminhome');
+              Navigator.pushNamed(context, '/messrephomescreen');
               break;
             case 1:
               // Navigate to meals page (you can create this page)
-              Navigator.pushNamed(context, '/complaints');
+              Navigator.pushNamed(context, '/messrepcomplaints');
               break;
             case 2:
-              Navigator.pushNamed(context, '/adminmenu');
+              Navigator.pushNamed(context, '/messrepmenu');
               break;
             case 3:
-              Navigator.pushNamed(context, '/messmanagement');
+              Navigator.pushNamed(context, '/messrepmanage');
               break;
             case 4:
-              Navigator.pushNamed(context, '/adminsettings');
+              Navigator.pushNamed(context, '/messrepsetting');
               break;
           }
         },

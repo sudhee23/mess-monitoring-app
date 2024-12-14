@@ -3,6 +3,7 @@ import 'package:mess/screens/AdminSetting_screen.dart';
 import 'package:mess/screens/Admincomplaints_screen.dart';
 import 'package:mess/screens/Adminhome_screen.dart';
 import 'package:mess/screens/Adminmenu_screen.dart';
+import 'package:mess/screens/Adminprofile_screen.dart';
 import 'package:mess/screens/Messmanage_screen.dart';
 import 'package:mess/screens/complaint_screen.dart';
 import 'package:mess/screens/feedback_screen.dart';
@@ -11,8 +12,11 @@ import 'package:mess/screens/mess_schedule.dart';
 import 'package:mess/screens/bmi_screen.dart';
 
 import 'package:mess/screens/messmenu_screen.dart';
+import 'package:mess/screens/messrepadmin_screen.dart';
 import 'package:mess/screens/messrepcomplaints_screen.dart';
 import 'package:mess/screens/messrephome_screen.dart';
+import 'package:mess/screens/messrepmanage_screen.dart';
+import 'package:mess/screens/messrepmenu_screen.dart';
 import 'package:mess/screens/profile_page.dart';
 import 'package:mess/screens/student_home_page.dart';
 
@@ -57,6 +61,10 @@ class MyApp extends StatelessWidget {
         '/adminsettings': (context) => AdminSettingsScreen(),
         '/messrephomescreen':(context) => MessrepHomePage(),
         '/messrepcomplaints':(context) => MessrepComplaintsPage(),
+        '/messrepmenu':(context) => MessrepmenuScreen(),
+        '/messrepmanage':(context) => MessrepManagementScreen(),
+        '/messrepsetting':(context) => MessrepAdminSettingsScreen(),
+        '/adminprofile':(context) => AdminProfilePage(),
       },
     );
   }

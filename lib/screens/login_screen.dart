@@ -1,5 +1,109 @@
-//login
 import 'package:flutter/material.dart';
+
+void main() {
+  runApp(RGUKTMessMateApp());
+}
+
+class RGUKTMessMateApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: DefaultPage(), // Starts with the DefaultPage
+    );
+  }
+}
+
+class DefaultPage extends StatefulWidget {
+  @override
+  _DefaultPageState createState() => _DefaultPageState();
+}
+
+class _DefaultPageState extends State<DefaultPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20), // Set animation to 20 seconds
+      vsync: this,
+    );
+
+    _fadeAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    ));
+
+    _controller.forward();
+
+    // Navigate to LoginSignUpPage after 20 seconds
+    Future.delayed(Duration(seconds: 20), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginSignUpPage()),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: Container(
+          color: Color(0xff1434A4), // Background color
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.network(
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPbOQPosTDvQfmxRcPa2U5CEDmQWOaL9zY-A&s',
+                  height: 100,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(
+                      Icons.broken_image,
+                      size: 100,
+                      color: Colors.white,
+                    );
+                  },
+                ),
+                SizedBox(height: 30),
+                Text(
+                  "RGUKT MESS MATE",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Empowering RGUKT with smart dining",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class LoginSignUpPage extends StatefulWidget {
   const LoginSignUpPage({super.key});
@@ -31,7 +135,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                     color: const Color.fromARGB(255, 4, 33, 176),
                   ),
                 ),
-                SizedBox(height: 20,),
+                SizedBox(height: 20),
                 Text(
                   'Welcome Back!',
                   style: TextStyle(
@@ -51,7 +155,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                         });
                       },
                       child: Text('Login',
-                          style: TextStyle(fontSize: 20, color: Colors.grey.shade600)),
+                          style: TextStyle(
+                              fontSize: 20, color: Colors.grey.shade600)),
                     ),
                     SizedBox(width: 20),
                     TextButton(
@@ -61,7 +166,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                         });
                       },
                       child: Text('Sign Up',
-                          style: TextStyle(fontSize: 20, color: Colors.grey.shade600)),
+                          style: TextStyle(
+                              fontSize: 20, color: Colors.grey.shade600)),
                     ),
                   ],
                 ),
@@ -80,20 +186,18 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       children: [
         TextField(
           decoration: InputDecoration(
-            fillColor: Colors.amber,
             labelText: 'Email Address',
-            suffixIcon: Icon(Icons.email,color: Colors.grey,),
+            suffixIcon: Icon(Icons.email, color: Colors.grey),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
-            
           ),
         ),
         SizedBox(height: 20),
         TextField(
           obscureText: true,
           decoration: InputDecoration(
-            suffixIcon: Icon(Icons.remove_red_eye,color: Colors.grey,),
+            suffixIcon: Icon(Icons.remove_red_eye, color: Colors.grey),
             labelText: 'Password',
             border: OutlineInputBorder(),
             focusedBorder: OutlineInputBorder(
@@ -102,7 +206,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           ),
         ),
         SizedBox(height: 20),
-        // Updated Dropdown without decoration
+        // Category Dropdown - centered properly
         Container(
           padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
@@ -132,13 +236,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           onPressed: () {
             if (selectedCategory == 'Student') {
               Navigator.pushNamed(context, '/home');
-            }
-            else if (selectedCategory == 'Administrator'){
+            } else if (selectedCategory == 'Administrator') {
               Navigator.pushNamed(context, '/adminhome');
-            }
-            else if(selectedCategory == 'Mess Representative'){
+            } else if (selectedCategory == 'Mess Representative') {
               Navigator.pushNamed(context, '/messrephomescreen');
-          }
+            }
           },
           style: ElevatedButton.styleFrom(
             minimumSize: Size(double.infinity, 50),
@@ -190,7 +292,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           },
           style: ElevatedButton.styleFrom(
             minimumSize: Size(double.infinity, 50),
-            backgroundColor: Colors.blue,
+            backgroundColor: Colors.blue[800],
           ),
           child: Text('Sign Up', style: TextStyle(color: Colors.white)),
         ),
@@ -198,7 +300,3 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     );
   }
 }
-
-
-
-

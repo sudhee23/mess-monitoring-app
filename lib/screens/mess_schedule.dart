@@ -1,16 +1,59 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:flutter/material.dart';// For date formatting
 
-// The ScheduleScreen widget
-class ScheduleScreen extends StatelessWidget {
-  const ScheduleScreen({super.key});
+// The ScheduleScreen widget (Now Stateful)
+class ScheduleScreen extends StatefulWidget {
+  @override
+  _ScheduleScreenState createState() => _ScheduleScreenState();
+}
+
+class _ScheduleScreenState extends State<ScheduleScreen> {
+  // Define variables for meal timings
+  String breakfastTime = "7:00 AM - 9:00 AM";
+  String lunchTime = "12:00 PM - 2:00 PM";
+  String snacksTime = "5:00 PM - 6:00 PM";
+  String dinnerTime = "7:00 PM - 9:00 PM";
+
+  // Text controllers for user input
+  TextEditingController breakfastController = TextEditingController();
+  TextEditingController lunchController = TextEditingController();
+  TextEditingController snacksController = TextEditingController();
+  TextEditingController dinnerController = TextEditingController();
+
+  // Method to update meal timings based on user input
+  void updateTimings() {
+    setState(() {
+      if (breakfastController.text.isNotEmpty) {
+        breakfastTime = breakfastController.text;
+      }
+      if (lunchController.text.isNotEmpty) {
+        lunchTime = lunchController.text;
+      }
+      if (snacksController.text.isNotEmpty) {
+        snacksTime = snacksController.text;
+      }
+      if (dinnerController.text.isNotEmpty) {
+        dinnerTime = dinnerController.text;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Get the current date and time
-    String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    String currentDay = DateFormat('EEEE').format(DateTime.now());
-
+    // Get current date
+    String formattedDate = "${DateTime.now().toLocal()}".split(' ')[0]; // Date
+    String formattedDay = DateTime.now().weekday == 1
+        ? "Monday"
+        : DateTime.now().weekday == 2
+            ? "Tuesday"
+            : DateTime.now().weekday == 3
+                ? "Wednesday"
+                : DateTime.now().weekday == 4
+                    ? "Thursday"
+                    : DateTime.now().weekday == 5
+                        ? "Friday"
+                        : DateTime.now().weekday == 6
+                            ? "Saturday"
+                            : "Sunday"; // Day
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false, // Remove default back button
@@ -50,7 +93,7 @@ class ScheduleScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    "$currentDay, $currentDate", // Show day and date only
+                    "$formattedDay, $formattedDate", // Show day and date only
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black, // Light blue color
@@ -71,218 +114,196 @@ class ScheduleScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Text(
-                  "Mess Timings",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue[800], // Dark blue color
+      body: Container(
+        padding: EdgeInsets.all(13.0),
+        decoration: BoxDecoration(
+          color: Color(0xffffffff),
+          borderRadius: BorderRadius.circular(10.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10.0,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Mess Schedule",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue[900],
+              ),
+            ),
+            SizedBox(height: 12),
+            Container(
+              padding: EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10.0,
+                    offset: Offset(0, 4),
                   ),
-                ),
+                ],
               ),
-              // Container for Mess Timings and Important Notes
-              Container(
-                padding: EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10.0,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Meal Timings List with Breakfast and Lunch side by side
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Breakfast Section
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Breakfast",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue[800], // Dark blue text
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                "Idli, Sambar",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Lunch Section
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Lunch",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue[800], // Dark blue text
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                "Rice, Dal, Curry",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    // Snacks and Dinner Section side by side
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Snacks Section
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Snacks",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue[800], // Dark blue text
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                "Tea, Biscuits",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Dinner Section
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Dinner",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue[800], // Dark blue text
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                "Roti, Paneer Curry",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Divider(
-                      color: Colors.grey,
-                      thickness: 1.0,
-                    ),
-                    // Important Notes Title
-                    SizedBox(height: 20),
-                    Text(
-                      "Important Notes",
-                      style: TextStyle(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Mess Timings Title
+                  Text(
+                    "Mess Timings",
+                    style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.blue[800],
+                        color: Colors.blue[800]),
+                  ),
+                  SizedBox(height: 10),
+                  // Meal Timings List with Breakfast and Lunch side by side
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Breakfast Section
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Breakfast",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue[800],
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              breakfastTime,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 8),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 8),
-                    // Important Notes List with bullets
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.circle,
-                                  size: 8, color: Colors.blue[800]),
-                              SizedBox(width: 8),
-                              Text("Please carry your ID card."),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(Icons.circle,
-                                  size: 8, color: Colors.blue[800]),
-                              SizedBox(width: 8),
-                              Text("No food wastage allowed."),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(Icons.circle,
-                                  size: 8, color: Colors.blue[800]),
-                              SizedBox(width: 8),
-                              Text("Maintain cleanliness."),
-                            ],
-                          ),
-                        ],
+                      // Lunch Section
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Lunch",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue[800],
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              lunchTime,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 8),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 16),
-                    Divider(),
-                    // Contact Information Title
-                    Text(
-                      "Contact Information",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue[800],
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  // Snacks and Dinner Section side by side
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Snacks Section
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Snacks",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue[800],
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              snacksTime,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 8),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 8),
-                    // Contact Info
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              "For any issues, please contact the Mess Manager at:"),
-                          SizedBox(height: 8),
-                          Text("Phone: 123-456-7890"),
-                          Text("Email: messmanager@example.com"),
-                        ],
+                      // Dinner Section
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Dinner",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue[800],
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              dinnerTime,
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 8),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 10),
-                  ],
-                ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  Divider(
+                    color: Colors.grey,
+                    thickness: 1.0,
+                  ),
+                  // Button to Save Update
+                ],
               ),
-            ],
-          ),
+            ),
+            SizedBox(height: 16),
+            // Important Notes Section
+            Text(
+              "Important Notes",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue[900],
+              ),
+            ),
+            buildBulletPoint("Please carry your ID card"),
+            buildBulletPoint("Follow queue system"),
+            buildBulletPoint("No food wastage"),
+            buildBulletPoint("Keep the mess clean"),
+            buildBulletPoint("Follow mess timings strictly"),
+            SizedBox(height: 16),
+            // Contact Information Section
+            Text(
+              "Contact Information",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue[900],
+              ),
+            ),
+            SizedBox(height: 8),
+            buildContactInfo("Mess Manager", "+91 9876543210"),
+            buildContactInfo("Mess Committee", "+91 9876543211"),
+            buildContactInfo("Email", "mess@rgukt.ac.in"),
+          ],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -323,6 +344,91 @@ class ScheduleScreen extends StatelessWidget {
           }
         },
       ),
+    );
+  }
+
+  // Reusable method to create meal timing rows
+  Widget buildTimingRow(String meal, String timing) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            meal,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue[800],
+            ),
+          ),
+          Text(
+            timing,
+            style: TextStyle(fontSize: 16, color: Colors.black87),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Reusable method to create bullet points
+  Widget buildBulletPoint(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.circle, size: 8, color: Colors.black54),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Reusable method for contact info rows
+  Widget buildContactInfo(String title, String info) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Text(
+            "$title: ",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              info,
+              style: TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Mess Schedule',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: ScheduleScreen(),
     );
   }
 }

@@ -1,28 +1,84 @@
-import 'dart:io';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class ComplaintScreen extends StatefulWidget {
-  const ComplaintScreen({super.key});
-
   @override
   _ComplaintScreenState createState() => _ComplaintScreenState();
 }
 
 class _ComplaintScreenState extends State<ComplaintScreen> {
-  final String _status = 'Pending';
   String complaintId = "12345"; // Sample Complaint ID
   String complaintDescription =
       "The food was cold and not fresh."; // Sample complaint description
-  File? _selectedImage; // File to store the selected image
 
-  // Function to pick an image
-  Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
+  // Variables to track the state of the form
+  String? selectedComplaintType;
+  TextEditingController complaintDescriptionController =
+      TextEditingController();
+  bool isButtonYellow = false; // To track whether the button should be yellow
+
+  // To store the complaint details once submitted
+  String? generatedComplaintId;
+  String? storedComplaintType;
+  String? storedComplaintDescription;
+  List<Map<String, String>> complaints = [];
+  TextEditingController trackComplaintController =
+      TextEditingController(); // Controller for tracking complaints
+  List<Map<String, String>> filteredComplaints =
+      []; // Store complaints filtered by the track complaint ID
+  String noMatchesFound = ""; // Message for no matches found
+
+  // Function to generate a unique 5-digit ID
+  String generateUniqueId() {
+    Random random = Random();
+    return (10000 + random.nextInt(90000)).toString(); // Generates a 5-digit ID
+  }
+
+  // Check if the Submit button should be enabled
+  bool isSubmitEnabled() {
+    return selectedComplaintType != null &&
+        complaintDescriptionController.text.isNotEmpty;
+  }
+
+  // Store the complaint details and generate a unique ID when submitted
+  void storeComplaintDetails() {
+    setState(() {
+      generatedComplaintId = generateUniqueId();
+      storedComplaintType = selectedComplaintType;
+      storedComplaintDescription = complaintDescriptionController.text;
+      complaints.add({
+        'id': generatedComplaintId!,
+        'type': storedComplaintType!,
+        'description': storedComplaintDescription!,
+        'status': 'Pending', // Status is now added correctly
+      });
+      // Reset the complaint description after submission
+      complaintDescriptionController.clear();
+      selectedComplaintType = null;
+    });
+  }
+
+  // Track the complaint based on the entered complaint ID
+  void trackComplaint() {
+    String trackId = trackComplaintController.text.trim();
+    if (trackId.isNotEmpty) {
       setState(() {
-        _selectedImage = File(pickedFile.path);
+        filteredComplaints = complaints
+            .where((complaint) => complaint['id']!
+                .contains(trackId)) // Match based on Complaint ID
+            .toList();
+
+        if (filteredComplaints.isEmpty) {
+          noMatchesFound =
+              "No matches found"; // Display message if no matches are found
+        } else {
+          noMatchesFound = ""; // Clear the message if matches are found
+        }
+      });
+    } else {
+      setState(() {
+        filteredComplaints = []; // Clear if input is empty
+        noMatchesFound = ""; // Clear the message
       });
     }
   }
@@ -105,253 +161,243 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Heading for the complaint form
-            Center(
-              child: Text(
-                'Submit a new complaint or track an existing one',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              "Complaint Form",
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue[800],
-              ),
-            ),
-            SizedBox(height: 20),
-            // Dropdown with border radius
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: "Select Complaint Type",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  borderSide:
-                      BorderSide(color: Colors.grey, width: 1), // Normal border
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  borderSide: BorderSide(
-                      color: Colors.blueAccent, width: 2.0), // Focused border
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Complaint Form",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue[800],
                 ),
               ),
-              items: ["Taste", "Hygiene", "Other"]
-                  .map((type) =>
-                      DropdownMenuItem(value: type, child: Text(type)))
-                  .toList(),
-              onChanged: (value) {},
-            ),
-            SizedBox(height: 20),
-            // TextField with border radius
-            TextField(
-              decoration: InputDecoration(
-                labelText: "Describe your complaint",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  borderSide:
-                      BorderSide(color: Colors.grey, width: 1), // Normal border
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  borderSide: BorderSide(
-                      color: Colors.blueAccent, width: 2.0), // Focused border
-                ),
-              ),
-              maxLines: 4,
-            ),
-            SizedBox(height: 20),
-            // Submit button with border radius
-            GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.blue[50],
-                  borderRadius: BorderRadius.circular(12.0),
-                  border: Border.all(color: Colors.blue[200]!),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.add_photo_alternate, color: Colors.blue),
-                    SizedBox(width: 10),
-                    Text(
-                      _selectedImage == null
-                          ? "Add an image (Optional)"
-                          : "Image Selected",
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            // Display selected image preview
-            if (_selectedImage != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12.0),
-                  child: Image.file(
-                    _selectedImage!,
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            // Submit button with border radius
-            SizedBox(height: 20),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12.0),
-                color: Colors.blue,
-              ),
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
+              SizedBox(height: 10),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(
+                  labelText: "Select Complaint Type",
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
                   ),
-                  backgroundColor: Colors.blue[800],
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: BorderSide(
+                        color: Colors.grey, width: 1), // Normal border
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                    borderSide: BorderSide(
+                        color: Colors.blueAccent, width: 2.0), // Focused border
+                  ),
                 ),
-                child: Text(
-                  "Submit Complaint",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
+                items: ["Taste", "Hygiene", "Other"]
+                    .map((type) =>
+                        DropdownMenuItem(value: type, child: Text(type)))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedComplaintType = value;
+                    isButtonYellow = value != null;
+                  });
+                },
+                value: selectedComplaintType,
               ),
-            ),
-            Divider(),
-            // Track Your Complaint title text color changed to white and added background for visibility
-            SizedBox(height: 20),
-            // Complaint ID text field
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      labelText: "Enter Complaint ID",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
+              SizedBox(height: 10),
+              selectedComplaintType != null
+                  ? Text(
+                      'You have selected "$selectedComplaintType" as the complaint type. Please describe your issue below.',
+                      style: TextStyle(fontSize: 14, color: Colors.blue[600]),
+                    )
+                  : Container(),
+              SizedBox(height: 10),
+              selectedComplaintType != null
+                  ? TextField(
+                      controller: complaintDescriptionController,
+                      decoration: InputDecoration(
+                        labelText: "Describe your complaint",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(
+                              color: Colors.grey, width: 1), // Normal border
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(
+                              color: Colors.blueAccent,
+                              width: 2.0), // Focused border
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(
-                            color: Colors.grey, width: 1), // Normal border
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                        borderSide: BorderSide(
-                            color: Colors.blueAccent,
-                            width: 2.0), // Focused border
-                      ),
-                    ),
-                  ),
+                      maxLines: 4,
+                      onChanged: (text) {
+                        setState(() {
+                          if (selectedComplaintType != null &&
+                              complaintDescriptionController.text.isNotEmpty) {
+                            isButtonYellow = true;
+                          } else {
+                            isButtonYellow = false;
+                          }
+                        });
+                      },
+                    )
+                  : Container(),
+              SizedBox(height: 10),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.0),
                 ),
-                SizedBox(width: 20),
-                // Track button beside the Complaint ID
-                // Image Picker Section
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    backgroundColor: Colors.blue[800],
-                  ),
+                child: ElevatedButton(
+                  onPressed: isSubmitEnabled() ? storeComplaintDetails : null,
                   child: Text(
-                    "Track",
+                    "Submit Complaint",
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white),
+                        color: isSubmitEnabled() ? Colors.white : Colors.white),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: 30),
-            // Track progress section with card displaying complaint ID and description
-            _status == 'Pending'
-                ? Card(
-                    color: Colors.white, // Set card color to white
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                    elevation: 5,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Complaint ID: $complaintId",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                              Text(
-                                "Pending", // Show the status next to the complaint ID
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Colors.orange),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            "Description: $complaintDescription",
-                            style: TextStyle(fontSize: 14),
-                          ),
-                        ],
+                    backgroundColor: isButtonYellow
+                        ? Colors.blue
+                        : Color.fromARGB(255, 255, 255, 255),
+                  ),
+                ),
+              ),
+              Divider(),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: trackComplaintController,
+                      decoration: InputDecoration(
+                        labelText: "Enter Complaint ID",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(
+                              color: Colors.grey, width: 1), // Normal border
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(
+                              color: Colors.blueAccent,
+                              width: 2.0), // Focused border
+                        ),
                       ),
                     ),
-                  )
-                : Container(),
-          ],
+                  ),
+                  SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: trackComplaint,
+                    child: Text(
+                      "Track",
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      backgroundColor: Colors.blue[800],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              // Show filtered complaints or all complaints based on tracking
+              filteredComplaints.isEmpty && noMatchesFound.isEmpty
+                  ? complaints.isEmpty
+                      ? Text("No complaints submitted yet.")
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: ScrollPhysics(),
+                          itemCount: complaints.length,
+                          itemBuilder: (context, index) {
+                            var complaint = complaints[index];
+                            return Container(
+                              padding: EdgeInsets.all(16.0),
+                              margin: EdgeInsets.only(bottom: 16.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12.0),
+                                border: Border.all(color: Colors.blue),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Complaint ID: ${complaint['id']}",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    "Description: ${complaint['description']}",
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  SizedBox(height: 10),
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    child: Text(
+                                      "Pending",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors
+                                          .red[400], // Pending status color
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 10, horizontal: 20),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        )
+                  : Text(noMatchesFound),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.blue),
-            label: 'Home',
-          ),
+              icon: Icon(Icons.home , color:Colors.blue),
+              label: 'Home',),
           BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book, color: Colors.blue),
-            label: 'Menu',
-          ),
+              icon: Icon(Icons.menu_book, color: Colors.blue), label: 'Menu',),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today, color: Colors.blue),
-            label: 'Schedule',
-          ),
+              icon: Icon(Icons.calendar_today , color:Colors.blue),
+              label: 'Schedule',),
           BottomNavigationBarItem(
-            icon: Icon(Icons.feedback, color: Colors.blue),
-            label: 'Feedback',
-          ),
+              icon: Icon(Icons.feedback , color:Colors.blue),
+              label: 'Feedback',),
           BottomNavigationBarItem(
-            icon: Icon(Icons.error_outline, color: Colors.blue),
-            label: 'Complaint',
-          ),
+              icon: Icon(Icons.error_outline , color:Colors.blue),
+              label: 'Complaint',),
         ],
         onTap: (index) {
           switch (index) {

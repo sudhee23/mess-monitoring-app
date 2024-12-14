@@ -163,11 +163,27 @@ class HomePage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            Text('Dinner',
+            Text('Snacks',
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.blue[800])), // Changed to blue
+            Container(
+              height: 150,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/breakfast.jpg'),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            SizedBox(height: 20),
+            Text('Dinner',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue[800])),
             Container(
               height: 150,
               decoration: BoxDecoration(

@@ -1,12 +1,6 @@
-import 'package:flutter/material.dart'; // For date formatting
-
-void main() {
-  runApp(MyApp());
-}
+import 'package:flutter/material.dart';
 
 class FeedbackScreen extends StatefulWidget {
-  const FeedbackScreen({super.key});
-
   @override
   _FeedbackScreenState createState() => _FeedbackScreenState();
 }
@@ -22,9 +16,22 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     });
   }
 
+  // Method to check if all feedbacks have been rated (not necessarily 5 stars)
+  bool _canSubmitFeedback() {
+    return ratings.every((rating) =>
+        rating != 0); // Ensure no feedback is left unrated (rating != 0)
+  }
+
+  // Method to reset ratings after submission
+  void _resetRatings() {
+    setState(() {
+      ratings = List.filled(10, 0); // Reset all ratings to 0
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-        String formattedDate = "${DateTime.now().toLocal()}".split(' ')[0]; // Date
+    String formattedDate = "${DateTime.now().toLocal()}".split(' ')[0]; // Date
     String formattedDay = DateTime.now().weekday == 1
         ? "Monday"
         : DateTime.now().weekday == 2
@@ -144,29 +151,43 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             ),
           SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {
-              // Handle feedback submission
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text("Feedback Submitted"),
-                  content: Text("Thank you for your feedback!"),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text("Close"),
-                    ),
-                  ],
-                ),
-              );
-            },
+            onPressed: _canSubmitFeedback()
+                ? () {
+                    // Handle feedback submission
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text("Feedback Submitted"),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 50,
+                            ),
+                            SizedBox(height: 10),
+                            Text("Thank you for your feedback!"),
+                          ],
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              _resetRatings(); // Reset feedback ratings after submission
+                              Navigator.pop(context); // Close the dialog
+                            },
+                            child: Text("Close"),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                : null, // Enable button when all ratings are filled
+            child: Text("Submit Feedback"),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue[800], // Dark blue button
               foregroundColor: Colors.white, // White text color
             ),
-            child: Text("Submit Feedback"),
           ),
         ],
       ),
@@ -208,24 +229,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           }
         },
       ),
-    );
-  }
-}
-
-// The root of the application
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Mess Feedback',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        brightness: Brightness.light, // Light theme
-      ),
-      home: FeedbackScreen(),
     );
   }
 }

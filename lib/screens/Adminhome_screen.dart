@@ -10,46 +10,59 @@ class AdminHomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: false, // Remove default back button
         title: Row(
           children: [
-            // Profile icon with border
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.blue[800]!, width: 2),
-                image: DecorationImage(
-                  image: NetworkImage('https://example.com/profile.jpg'),
-                  fit: BoxFit.cover,
+            // Profile Icon (left side)
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(
+                    context, '/adminprofile'); // Navigate to Profile Page
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  radius: 20, // Profile icon size
+                  backgroundColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.blue[800]!, width: 2),
+                    ),
+                  ),
                 ),
               ),
             ),
-            // Centered Greeting
+            // Centered text with greeting, date, and day
             Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Hi Dheeraj",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue[800],
+                      color: Colors.blue[800], // Dark blue color
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 8),
                   Text(
-                    "$currentDay, $currentDate",
-                    style: TextStyle(fontSize: 16, color: Colors.blue[300]),
+                    "$currentDay, $currentDate", // Show day and date only
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black, // Light blue color
+                    ),
                   ),
                 ],
               ),
             ),
+            // Notification Icon (right side)
             IconButton(
               icon: Icon(Icons.notifications, color: Colors.blue[800]),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context,
+                    '/notification'); // Navigate to Notifications Page
+              },
             ),
           ],
         ),
@@ -61,12 +74,12 @@ class AdminHomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-               Center(
-              child: Text(
-                'Manage complaints and mess operations',
-                style: TextStyle(fontSize: 16),
+              Center(
+                child: Text(
+                  'Manage complaints and mess operations',
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
-            ),
               SizedBox(height: 20),
               Text(
                 "Complaint Management",
@@ -127,18 +140,18 @@ class AdminHomePage extends StatelessWidget {
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  borderSide:
-                      BorderSide(color: Colors.grey, width: 1), // Normal border
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  borderSide: BorderSide(
-                      color: Colors.blueAccent, width: 2.0), // Focused border
-                ),
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(
+                              color: Colors.grey, width: 1), // Normal border
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                          borderSide: BorderSide(
+                              color: Colors.blueAccent,
+                              width: 2.0), // Focused border
+                        ),
                         labelText: "Enter Complaint ID",
                       ),
-                      
                     ),
                   ),
                   SizedBox(width: 10),
@@ -167,9 +180,8 @@ class AdminHomePage extends StatelessWidget {
           ),
         ),
       ),
-      
       bottomNavigationBar: BottomNavigationBar(
-        items: const[
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard, color: Color(0xFF9CA3AF)),
             label: "Dashboard",

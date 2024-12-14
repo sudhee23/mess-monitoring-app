@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Add this import to use DateFormat
+import 'package:intl/intl.dart';
 
 class ComplaintsPage extends StatelessWidget {
   @override
@@ -10,49 +10,63 @@ class ComplaintsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: false, // Remove default back button
         title: Row(
           children: [
-            // Profile icon with border
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.blue[800]!, width: 2),
-                image: DecorationImage(
-                  image: NetworkImage('https://example.com/profile.jpg'),
-                  fit: BoxFit.cover,
+            // Profile Icon (left side)
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(
+                    context, '/adminprofile'); // Navigate to Profile Page
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  radius: 20, // Profile icon size
+                  backgroundColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.blue[800]!, width: 2),
+                    ),
+                  ),
                 ),
               ),
             ),
-            // Centered Greeting
+            // Centered text with greeting, date, and day
             Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Hi Dheeraj",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue[800],
+                      color: Colors.blue[800], // Dark blue color
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 8),
                   Text(
-                    "$currentDay, $currentDate",
-                    style: TextStyle(fontSize: 16, color: Colors.blue[300]),
+                    "$currentDay, $currentDate", // Show day and date only
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black, // Light blue color
+                    ),
                   ),
                 ],
               ),
             ),
+            // Notification Icon (right side)
             IconButton(
               icon: Icon(Icons.notifications, color: Colors.blue[800]),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context,
+                    '/notification'); // Navigate to Notifications Page
+              },
             ),
           ],
         ),
+        centerTitle: true,
       ),
       body: Column(
         children: [
@@ -246,79 +260,100 @@ class _ComplaintCardState extends State<ComplaintCard> {
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8.0),
-      width: double.infinity, // Make the card take full width of the screen
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1), // Make the shadow softer
+            color: Colors.black.withOpacity(0.1),
             blurRadius: 8.0,
             spreadRadius: 2.0,
-            offset: Offset(0, 3), // Position the shadow
+            offset: Offset(0, 3),
           ),
         ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("#${widget.id}",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ],
-            ),
-            SizedBox(height: 8.0),
-            Text("Submitted by: ${widget.name}",
-                style: TextStyle(color: Color(0xff130707))),
-            SizedBox(height: 8.0),
-            Text(
-              widget.title,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-            ),
-            SizedBox(height: 8.0),
-            Text(widget.description,
-                style: TextStyle(color: Color(0xff130707))),
-            SizedBox(height: 8.0),
-            Text(widget.date,
-                style: TextStyle(color: Color(0xff1d1414), fontSize: 12.0)),
-            SizedBox(height: 8.0),
-            // Dropdown to change the status
-            DropdownButton<String>(
-              value: selectedStatus,
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedStatus = newValue;
-                });
-              },
-              items: <String>['Pending', 'In Progress', 'Resolved']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
-            // Status Button
-            SizedBox(height: 8.0),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: statusColor,
-                side: BorderSide(color: Colors.black),
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+            // Left column: Complaint details
+            Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "#${widget.id}",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8.0),
+                  Text("Submitted by: ${widget.name}",
+                      style: TextStyle(color: Color(0xff130707))),
+                  SizedBox(height: 8.0),
+                  Text(
+                    widget.title,
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+                  ),
+                  SizedBox(height: 8.0),
+                  Text(
+                    widget.description,
+                    style: TextStyle(color: Color(0xff130707)),
+                  ),
+                  SizedBox(height: 8.0),
+                  Text(
+                    widget.date,
+                    style: TextStyle(color: Color(0xff1d1414), fontSize: 12.0),
+                  ),
+                ],
               ),
-              child: Text(
-                selectedStatus ?? 'Status',
-                style: TextStyle(color: Colors.black),
+            ),
+            // Right column: Status dropdown and button
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Dropdown to change the status
+                  DropdownButton<String>(
+                    value: selectedStatus,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedStatus = newValue;
+                      });
+                    },
+                    items: <String>['Pending', 'In Progress', 'Resolved']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 8.0),
+                  // Status button
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: statusColor,
+                      side: BorderSide(color: Colors.black),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                    ),
+                    child: Text(
+                      selectedStatus ?? 'Status',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
+
     );
   }
 }

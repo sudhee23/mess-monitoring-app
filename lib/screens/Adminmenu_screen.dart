@@ -12,49 +12,63 @@ class AdminMenuPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: false, // Remove default back button
         title: Row(
           children: [
-            // Profile icon with border
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.blue[800]!, width: 2),
-                image: DecorationImage(
-                  image: NetworkImage('https://example.com/profile.jpg'),
-                  fit: BoxFit.cover,
+            // Profile Icon (left side)
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(
+                    context, '/adminprofile'); // Navigate to Profile Page
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  radius: 20, // Profile icon size
+                  backgroundColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.blue[800]!, width: 2),
+                    ),
+                  ),
                 ),
               ),
             ),
-            // Centered Greeting
+            // Centered text with greeting, date, and day
             Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Hi Dheeraj",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue[800],
+                      color: Colors.blue[800], // Dark blue color
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 8),
                   Text(
-                    "$currentDay, $currentDate",
-                    style: TextStyle(fontSize: 16, color: Colors.blue[300]),
+                    "$currentDay, $currentDate", // Show day and date only
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black, // Light blue color
+                    ),
                   ),
                 ],
               ),
             ),
+            // Notification Icon (right side)
             IconButton(
               icon: Icon(Icons.notifications, color: Colors.blue[800]),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context,
+                    '/notification'); // Navigate to Notifications Page
+              },
             ),
           ],
         ),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
